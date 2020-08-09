@@ -1,0 +1,224 @@
+﻿@model GroupCapstoneProoj.Models.TraderListingViewModel
+
+@{
+    ViewData["Title"] = "ListingDetails";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    .checked {
+        color: orange;
+    }
+</style>
+
+<h1>@Model.CurrentListing.ListingName</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div id="demo" class="carousel slide" width : 25% data-ride="carousel">
+
+                <!-- Indicators -->
+                <ul class="carousel-indicators">
+                    <li data-target="#demo" data-slide-to="0" class="active"></li>
+                    <li data-target="#demo" data-slide-to="1"></li>
+                    <li data-target="#demo" data-slide-to="2"></li>
+                </ul>
+
+                <!-- The slideshow -->
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img style="width: auto; margin: 0 auto; height: 500px; max-height: 500px;" src="~/ListingImgs/@Model.CurrentListing.imageOne" />
+                    </div>
+                    <div class="carousel-item">
+                        <img style="width: auto;  margin: 0 auto;height: 500px; max-height: 500px;" src="~/ListingImgs/@Model.CurrentListing.imageTwo" />
+                    </div>
+                    <div class="carousel-item">
+                        <img style="width: auto; margin: 0 auto;height: 500px; max-height: 500px;" src="~/ListingImgs/@Model.CurrentListing.imageThree" alt="imageThree" />
+                    </div>
+                </div>
+
+                <!-- Left and right controls -->
+                <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </a>
+                <a class="carousel-control-next" href="#demo" data-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </a>
+
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <table class="table table-active">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.CurrentListing.ListingName)</th>
+                        <th>@Html.DisplayNameFor(model => model.CurrentListing.Category)</th>
+                        <th>Looking for:</th>
+                        <th>@Html.DisplayNameFor(model => model.CurrentListing.Price)</th>
+                        <th>@Html.DisplayNameFor(model => model.CurrentListing.ListingDescription)</th>
+                        <th>@Html.DisplayNameFor(model => model.CurrentListing.ZipCode)</th>
+                        <th>Sold By:</th>
+                        <th>@Html.DisplayNameFor(model => model.CurrentSeller.Rating)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.ListingName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.Category)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.InReturn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.ListingDescription)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentListing.ZipCode)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(model => model.CurrentSeller.FirstName)
+                        </td>
+                        <td>
+                            <div style="display:inline-flex">
+                                @for (int i = 0; i < @Model.CurrentSeller.Rating; i++)
+                                {
+                                    <span class="fa fa-star checked fa-2x"></span>
+
+                                }
+                                @for (int i = 0; i < 5 - @Model.CurrentSeller.Rating; i++)
+                                {
+                                    <span class="fa fa-star fa-2x"></span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" colspan="4">
+                            <form asp-action="MakePayment" method="post" asp-route-id="@Model.CurrentListing.Id">
+                                <button class="btn btn-success btn-lg" name="Puchase">I'm Ready to Buy!</button>
+                            </form>
+                        </td>
+                        <td align="center" colspan="4">
+                            <button type="button"  class="btn btn-success btn-lg"value="CompleteTransaction" onclick="location.href='@Url.Action("CompleteTransaction", "Traders", new { id = Model.CurrentListing.Id})'">I'm Ready to Trade!</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" ; colspan="8">
+                            <div class="card border-success mb-auto">
+                                <h3 style="text-align : center">Chat with the Seller</h3>
+                                <div class="row">
+                                    <div class="col-4" style="text-align:center">Username:</div>
+                                    <div class="col-4" id="currentUserName"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-4" style="text-align:center">Message:</div>
+                                    <div class="col-4"><input type="text" id="messageInput" /></div>
+                                </div>
+                                <div class="row">&nbsp;</div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <input type="button" class="btn btn-outline-success btn-sm" id="sendButton" value="Send Message" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="card-body">
+                                        <ul style="text-align:left" id="messagesList"></ul>
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+                        </td>
+                    </tr>
+            </table>
+
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="row" style="align-content:center">
+        <input id="pac-input"
+               class="controls, col-form-label"
+               type="text"
+               placeholder="Search For Meetup Location" />
+        <div id="map"></div>
+    </div>
+    <br />
+    <br />
+
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/chat.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-sDEHg4S5V1rYbnFEtFhekTHAxeHSgcI&callback=initAutocomplete&libraries=places&v=weekly"
+        defer></script>
+<script>
+    function initAutocomplete() {
+        var listingLocation = { lat: @Model.CurrentListing.Latitude, lng: @Model.CurrentListing.Longitude };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            center: listingLocation,
+            zoom: 13,
+            mapTypeId: "roadmap"
+        });
+
+        const input = document.getElementById("pac-input");
+        const searchBox = new google.maps.places.SearchBox(input);
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input); // Bias the SearchBox results towards current map's viewport.
+        map.addListener("bounds_changed", () => {
+            searchBox.setBounds(map.getBounds());
+        });
+        let markers = []; // Listen for the event fired when the user selects a prediction and retrieve
+        searchBox.addListener("places_changed", () => {
+            const places = searchBox.getPlaces();
+            if (places.length == 0) {
+                return;
+            } // Clear out the old markers.
+
+            markers.forEach(marker => {
+                marker.setMap(null);
+            });
+            markers = []; // For each place, get the icon, name and location.
+            const bounds = new google.maps.LatLngBounds();
+            places.forEach(place => {
+                if (!place.geometry) {
+                    console.log("Returned place contains no geometry");
+                    return;
+                }
+
+                const icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25)
+                }; // Create a marker for each place.
+
+                markers.push(
+                    new google.maps.Marker({
+                        map,
+                        icon,
+                        title: place.name,
+                        position: place.geometry.location
+                    })
+                );
+                if (place.geometry.viewport) {
+                    // Only geocodes have viewport.
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            map.fitBounds(bounds);
+        });
+    }
+</script>
